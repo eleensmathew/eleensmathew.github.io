@@ -50,7 +50,6 @@ def upload_video(request):
 
         return HttpResponse('Video analysis complete')
 
-    return render(request, 'upload_video.html')
+    return render(request, 'upload.html')
 def analyze_video_for_guns(video_path):
     pass
-    
