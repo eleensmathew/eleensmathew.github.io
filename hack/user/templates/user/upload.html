@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Record Video</title>
+	<script>
+		const MAX_VIDEO_DURATION = 60 * 1000;
+		let mediaRecorder, videoChunks, video;
+		window.onload = function() {
+			video = document.querySelector('video');
+			startRecording();
+		}
+		function startRecording() {
+			navigator.mediaDevices.getUserMedia({video: true, audio: true})
+			.then(function(stream) {
+				mediaRecorder = new MediaRecorder(stream);
+				videoChunks = [];
+				video.srcObject = stream;
+				video.play();
+				mediaRecorder.start();
+				mediaRecorder.ondataavailable = function(e) {
+					videoChunks.push(e.data);
+				}
+				mediaRecorder.onstop = function() {
+					let blob = new Blob(videoChunks, { 'type' : 'video/mp4' });
+					let url = URL.createObjectURL(blob);
+					video.src = url;
+					let formData = new FormData();
+					formData.append('video_file', blob, 'video.mp4');
+					sendVideo(formData);
+				}
+				setTimeout(function() {
+					stopRecording();
+				}, MAX_VIDEO_DURATION);
+			})
+			.catch(function(err) {
+				console.log('Error: ' + err.message);
+			});
+		}
+		function stopRecording() {
+			mediaRecorder.stop();
+			video.pause();
+			video.currentTime = 0;
+		}
+		function sendVideo(formData) {
+			let xhr = new XMLHttpRequest();
+			xhr.open('POST', '/upload_video/');
+			xhr.send(formData);
+			xhr.onload = function() {
+				if (xhr.status == 200) {
+					window.location.reload();
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<h1>Record Video</h1>
+	<p>Record a video up to one minute in length:</p>
+	<video controls></video>
+	<br>
+	<button onclick="stopRecording()">Stop Recording and Upload</button>
+</body>
+</html>
