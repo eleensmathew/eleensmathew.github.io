@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from azure.core.exceptions import ResourceNotFoundError
 from azure.core.credentials import AzureKeyCredential
-from azure.ai.formrecognizer import FormRecognizerClient
+# from azure.ai.formrecognizer import FormRecognizerClient
 # import uuid
 # from azure.storage.blob import BlockBlobService
 from azure.storage.blob import BlobServiceClient
