@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Admin_info
+from .models import Admin_info, PriorityQueue
 
 admin.site.register(Admin_info)
-#admin.site.register(Priority)
+admin.site.register(PriorityQueue)

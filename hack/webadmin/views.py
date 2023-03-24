@@ -1,22 +1,30 @@
 from django.shortcuts import render
-from .models import Priority, Admin_info
+from .models import PriorityQueue, Admin_info
 # Create your views here.
 
-#def select_admin(): #Selecting which admin should monitor that video recording
+def select_admin(): #Selecting which admin should monitor that video recording
+    admin_select = Admin_info.objects.values_list('priority.total_values()', 'username') #or use lists(...all)
+    min_tuple = min(admin_select, key=lambda tup: tup[0])
+    return min_tuple[1]
     
-# def get_video():    #Which videos the admins have to currently watch respectively
+def get_video(request):    #Which videos the admins have to currently watch respectively
+    admin = request.user.username
+    admin_obj = Admin_info.objects.get(username = admin)
+    video = admin_obj.priority.peek()
+    return render(request, "webadmin/Showrec.html", {"video" : video})
     
-# def assign_priority(assigned):  #setting the priority of the new video in selected admin's queue
+def assign_priority():  #given based on criteria
     
+def next_video():
+    #video the admin has to watch after they finished watching the previous and delete previous from queue
+    admin = request.user.username
+    adminobj = Admin_info.objects.get(username = admin)
+    vid1 = admin_obj.priority.pop()
+    video = admin_obj.priority.peek()
+    return render(request, "webadmin/Showrec.html", {"video" : video})
     
-# def next_video():   #video the admin has to watch after they finished watching the previous and delete previos from queue
-  
-#def add_video_details():    #add video in admin's queue
-      #create the object having pq and pk of new video
-      #pk will be fetched from the cloud storage
-      #pq will be calculated based on hash function for assigning priority to the events
-    #   admin_assigned = select_admin() #object
-    #   priority_val = assign_priority(admin_assigned)
-    #   #pk_val = fetched
-    #   new_video = Priority.objects.create(pq=priority_val, pk_value=pk_val, admin_associated=admin_assigned)
-    #   new_video.save()
+def add_video_details(request, v_id):    #add video in admin's queue
+    admin_assigned = Admin_info.objects.get(username = select_admin()) #object
+    p = assign_priority()
+    admin_assigned.priority.push(p, v_id)
+    admin_assigned.save()
