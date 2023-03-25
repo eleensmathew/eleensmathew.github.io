@@ -43,9 +43,8 @@ INSTALLED_APPS = [
      'user',
      'storages',
      'django_extensions',
-     'crispy_forms',
+     'notebook',
     #  'heap',
-    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -151,8 +150,10 @@ IPYTHON_ARGUMENTS = [
     '--ext', 'django_extensions.management.notebook_extension',
 ]
 NOTEBOOK_ARGUMENTS = [
-    '--config=jupyter_notebook_config.py',
+    '--ip', '0.0.0.0',
+    '--port', '8888',
 ]
+IPYTHON_KERNEL_DISPLAY_NAME = 'Django Kernel'
 #SETTINGS_PATH = os.path.normpath(os.path.dirname(__file__))
 TEMPLATE_DIRS = (
     os.path.join(SETTINGS_PATH, 'templates'),

@@ -71,13 +71,10 @@ class PriorityQueue(models.Model):
     def pop(self):              #removes the value with highest priority
         if not self.heap:
             raise IndexError("Heap is empty")
-        priority = self.heap[0]
-        # print(self.heap)
-        # print(self.data)
-        values = list(self.data[str(priority)])
+        priority, values = self.heap[0]
         value = values.pop(0)
         if not values:
-            del self.data[str(priority)]
+            del self.data[priority]
             heapq.heappop(self.heap)
         self.save()
         return value
@@ -85,8 +82,7 @@ class PriorityQueue(models.Model):
     def peek(self):
         if not self.heap:
             raise IndexError("Heap is empty")
-        priority = self.heap[0]
-        values = self.data[str(priority)]
+        priority, values = self.heap[0]
         return values[0]
 
     def _heapify(self):     #populate the dictionary with data keys and values

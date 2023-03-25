@@ -6,17 +6,21 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from azure.core.exceptions import ResourceNotFoundError
 from azure.core.credentials import AzureKeyCredential
-# from django_extensions.management.notebook_extension import shell_plus
+#from django_extensions.management.notebook_extension import shell_plus
+from django.core.management import call_command
 # from azure.ai.formrecognizer import FormRecognizerClient
 # import uuid
+import subprocess
 # from azure.storage.blob import BlockBlobService
 from azure.storage.blob import BlobServiceClient
 from django.conf import settings
 from django.http import (HttpResponse, HttpResponseBadRequest, 
                          HttpResponseForbidden, HttpResponseServerError)
 from django.http import JsonResponse
+import nbformat
+from nbformat import read
 #from django_extensions.management.notebook_extension import run_notebook
-# from .kernel import *
+#from .kernel import *
 import cv2
 import random
 import os
@@ -85,8 +89,7 @@ def upload_video(request):
         storage.name  = video_file.name.split('.')[0]
         slugn =storage.name + str(uuid.uuid1())
         slugd = slugify(slugn)
-        # vid_path = "tmp/" + slugd + ".mp4"
-        vid_path = slugd + ".mp4"
+        vid_path = "tmp/" + slugd + ".mp4"
         storage.slug = vid_path
         storage.save()
         prioritynum = 1
@@ -135,13 +138,15 @@ def upload_video(request):
 
 def delete_image(path):
     os.remove(path)
-
 def extract_images():#(video_file):
+    # Open the video file
     cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
 
+    # Create a directory to save the extracted images
     images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
     os.makedirs(images_dir, exist_ok=True)
 
+    # Extract 5 random images from the video file
     frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 5))
     for i in frame_indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES, i)
@@ -154,6 +159,7 @@ def extract_images():#(video_file):
         cv2.imwrite(image_file, frame)
         
 
+    # Release the video file
     cap.release()
 
     # Call another function with the extracted images
@@ -165,15 +171,39 @@ def extract_images():#(video_file):
 #     output = {}#run_notebook('.ipynb', image_paths=image_paths)
 #     return output
 
-# def run_jupyter():
-#     media_folder = settings.MEDIA_ROOT
-    
-#     # get list of image paths
-#     image_paths = [os.path.join(media_folder, f) for f in os.listdir(media_folder) if f.endswith(('.jpg', '.png', '.jpeg'))]
-    
-#     # pass image paths to Jupyter notebook
-#     shell_plus(line=f'run hello.ipynb {image_paths}')
-#     shell_plus(line=f'run hello.ipynb {image_paths}')
 
-#     # return response
-#     return JsonResponse({'message': 'Jupyter notebook completed successfully'})
+# def run_jupyter():
+#     # write the input data to a JSON file
+#     # input_file = os.path.join(settings.MEDIA_ROOT, 'input.json')
+#     # with open(input_file, 'w') as f:
+#     #     json.dump(data, f)
+
+#     # read the Jupyter notebook
+#     with open('Crimedetector-Copy1.ipynb', 'r', encoding='utf-8') as nb_file:
+#         nb_contents = nb_file.read()
+        
+#     nb = read(nb_contents, as_version=nbformat.NO_CONVERT)
+#     nb['cells'][0]['source'] = f"data = {data}"
+#     with open(nb_path, 'w') as f:
+#         f.write(nbformat.writes(nb))
+#     subprocess.run(['jupyter', 'nbconvert', '--execute', '--to', 'notebook', '--inplace', nb_path], check=True)
+#     return hello
+    # exporter = PythonExporter()
+    # script, _ = exporter.from_notebook_node(nb)
+    # # replace the input file path in the Jupyter notebook
+    # nb_contents = nb_contents.replace('input_file_path', input_file)
+
+    # # convert the notebook to a Python script
+    # nb = read(nb_contents, NO_CONVERT)
+    # exporter = PythonExporter()
+    # script, _ = exporter.from_notebook_node(nb)
+
+    # # execute the Python script and get the output
+    # exec(script, {})
+    # output_file = os.path.join(settings.MEDIA_ROOT, 'output.json')
+    # with open(output_file, 'r') as f:
+    #     output_data = json.load(f)
+
+    # return response
+    #return JsonResponse(output_data)
+#run_jupyter()
