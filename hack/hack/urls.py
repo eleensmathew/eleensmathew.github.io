@@ -19,11 +19,10 @@ from django.conf import settings
 from django.views.generic.base import TemplateView
 from django.conf.urls.static import static
 urlpatterns = [
-     path('', include("user.urls")),
+    path('', include("user.urls")),
     path('admin/', admin.site.urls),
     path('webadmin/', include(('webadmin.urls', 'webadmin'), namespace='webadmin')),
     #path('upload/', Uploader.as_view()),
 
 ]
-# if settings.DEBUG:
-#    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

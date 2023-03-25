@@ -23,23 +23,30 @@ def stream_video(request):
     li = get_video(request)
     video = li[0]
     videonext = li[1]
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=video)
+    # print(video)
+    blob_name="webadmin/" + video
+    blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+    
+    download_stream = blob_client.download_blob()
+    content_type = download_stream.read
 
     # Set the response headers for video streaming
     # content_type = blob_client.get_blob_properties().content_settings.content_type
-    response = HttpResponse(blob_client.download_blob().content_settings.content_type or 'video/mp4')
+    response = HttpResponse(content_type=content_type)
 
-    response['Content-Disposition'] = 'inline'
-    response['Cache-Control'] = 'no-cache'
-    response['X-Accel-Buffering'] = 'no'
+    response['Content-Disposition'] = f'attachment; filename="{blob_name}"'
+    # response['Cache-Control'] = 'no-cache'
+    # response['X-Accel-Buffering'] = 'no'
 
     # Stream the video content
-    response.streaming_content = blob_client.download_blob().content_as_bytes()
-
+    # response.streaming_content = blob_client.download_blob().content_as_bytes()
+    response.write(download_stream.readall())
     # Render the template
+    # print(video)
     return render(request, "webadmin/Showrec.html", {"video" : video,
                                                      "videonext" : videonext
                                                      })
+    # return response
 
 def select_admin(): #Selecting which admin should monitor that video recording
     admin_select = list(Admin_info.objects.all()) 

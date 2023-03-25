@@ -89,11 +89,13 @@ def upload_video(request):
         slugn =storage.name + str(uuid.uuid1())
         slugd = slugify(slugn)
         # vid_path = "tmp/" + slugd + ".mp4"
-        vid_path = slugd + ".mp4"
+        string = "webadmin/"
+        s = slugd + ".mp4"
+        vid_path = string+ s
         storage.slug = vid_path
         storage.save()
         prioritynum = 1
-        add_video_details(prioritynum, vid_path)
+        add_video_details(prioritynum, s)
         with open(vid_path, 'wb+') as destination:
             for chunk in video_file.chunks():
                 destination.write(chunk)

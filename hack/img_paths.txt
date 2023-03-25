@@ -1,5 +1,5 @@
-/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/media/extracted_images2/frame_0.jpg
-/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/media/extracted_images2/frame_1.jpg
-/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/media/extracted_images2/frame_2.jpg
-/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/media/extracted_images2/frame_3.jpg
-/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/media/extracted_images2/frame_4.jpg
+/mnt/c/Users/amita/OneDrive/Desktop/django_proj/hack36/eleensmathew.github.io/hack/media/extracted_images2/frame_0.jpg
+/mnt/c/Users/amita/OneDrive/Desktop/django_proj/hack36/eleensmathew.github.io/hack/media/extracted_images2/frame_1.jpg
+/mnt/c/Users/amita/OneDrive/Desktop/django_proj/hack36/eleensmathew.github.io/hack/media/extracted_images2/frame_2.jpg
+/mnt/c/Users/amita/OneDrive/Desktop/django_proj/hack36/eleensmathew.github.io/hack/media/extracted_images2/frame_3.jpg
+/mnt/c/Users/amita/OneDrive/Desktop/django_proj/hack36/eleensmathew.github.io/hack/media/extracted_images2/frame_4.jpg
