@@ -6,6 +6,5 @@ app_name = "webadmin"
 #from .views import
 urlpatterns = [
     path('get_video/', views.get_video, name='get_video'),
-    path('next_video/', views.next_video, name='next_video'),
     path('add_video_details/<slug:slug>/', views.add_video_details, name='add_video_details'),
 ]
