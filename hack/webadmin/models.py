@@ -13,6 +13,7 @@ class PriorityQueue(models.Model):
         return str(self.data)
 
     def push(self, priority, value):
+        priority = int(priority)
         heapq.heappush(self.heap, (priority, value))
         if priority not in self.data:       #to avoid the overlapping of the values for which keys are same
             self.data[priority] = []

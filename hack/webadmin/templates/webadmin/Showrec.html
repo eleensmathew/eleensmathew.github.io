@@ -1,0 +1,48 @@
+{% load_static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="showrec.css" rel="stylesheet"/>
+    <title>Show recording</title>
+</head>
+<body>
+    <video id="videoPlayer" width="640" height="360" controls>
+        <source src="{{ video }}.mp4" type="video/mp4">
+        <source src="{{ video }}.webm" type="video/webm">
+        <source src="{{ video }}.ogg" type="video/ogg">   
+    </video>
+      <br>
+      <button onclick="play()">Play</button>
+      <button onclick="pause()">Pause</button>
+      <button onclick="next()">Next</button>
+      <button onclick="rewind()">Rewind</button>
+        <button onclick="setSpeed(1.5)">1.5x Speed</button>
+        <button onclick="setSpeed(2)">2x Speed</button>
+        <button onclick="skip(10)">Skip 10s</button>
+      <script>
+        var videoPlayer = document.getElementById("videoPlayer");
+        function play() {
+          videoPlayer.play();
+        }
+        function pause() {
+          videoPlayer.pause();
+        }
+        function next() {
+          // Replace this URL with the URL of the next video
+          window.location.href = "{{ videonext }}";
+        }
+        function rewind() {
+            videoPlayer.currentTime -= 10;
+        }
+        function setSpeed(speed) {
+            videoPlayer.playbackRate = speed;
+        }
+        function skip(seconds) {
+            videoPlayer.currentTime += seconds;
+        }
+      </script>
+</body>
+</html>
