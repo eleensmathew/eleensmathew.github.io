@@ -18,7 +18,7 @@ def assign_priority():  #given based on criteria
 def next_video():
     #video the admin has to watch after they finished watching the previous and delete previous from queue
     admin = request.user.username
-    adminobj = Admin_info.objects.get(username = admin)
+    admin_obj = Admin_info.objects.get(username = admin)
     vid1 = admin_obj.priority.pop()
     video = admin_obj.priority.peek()
     return render(request, "webadmin/Showrec.html", {"video" : video})
