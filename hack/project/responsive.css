@@ -1,0 +1,47 @@
+/* For mobile devices */
+@media only screen and (max-width: 767px) {
+    /* Set the font size of the body and header to a smaller size */
+    body {
+      font-size: 14px;
+    }
+    header h1 {
+      font-size: 24px;
+    }
+    /* Change the navigation menu to a vertical layout */
+    nav {
+      flex-direction: column;
+    }
+    nav a {
+      display: block;
+      padding: 10px;
+    }
+    /* Set the width of the main content to 100% */
+    .main-content {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (min-width: 768px) {
+
+    body {
+      font-size: 16px;
+    }
+    header h1 {
+      font-size: 36px;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+    nav a {
+      display: inline-block;
+      padding: 10px 20px;
+    }
+
+    .main-content {
+      width: 70%;
+    }
+  }
+  
