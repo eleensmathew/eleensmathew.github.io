@@ -135,15 +135,13 @@ def upload_video(request):
 
 def delete_image(path):
     os.remove(path)
+
 def extract_images():#(video_file):
-    # Open the video file
     cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
 
-    # Create a directory to save the extracted images
     images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
     os.makedirs(images_dir, exist_ok=True)
 
-    # Extract 5 random images from the video file
     frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 5))
     for i in frame_indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES, i)
@@ -156,7 +154,6 @@ def extract_images():#(video_file):
         cv2.imwrite(image_file, frame)
         
 
-    # Release the video file
     cap.release()
 
     # Call another function with the extracted images

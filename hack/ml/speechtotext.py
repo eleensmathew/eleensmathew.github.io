@@ -1,5 +1,5 @@
 from pocketsphinx import AudioFile
-slurwords=[]
+slurwords=['kill','murder','terrori']
 def slurdetector(phrase):
     array=phrase.split(" ")
     score=0
@@ -12,11 +12,9 @@ def slurdetector(phrase):
 # for phrase in audio:
 #     print(phrase)
 #     print(slurdetector(str(phrase)))
-# files after part 2
 import requests
 import time
-API_KEY_ASSEMBLYAI='1495d351757048f78629c0402e32f559'
-filename = "Natural Language Processing Short.m4a"
+API_KEY_ASSEMBLYAI='key'
 upload_endpoint = 'https://api.assemblyai.com/v2/upload'
 transcript_endpoint = 'https://api.assemblyai.com/v2/transcript'
 
