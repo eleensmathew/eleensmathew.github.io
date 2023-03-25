@@ -11,10 +11,12 @@ class PriorityQueue(models.Model):
 
     def __str__(self):
         return str(self.data)
+    
+    # def __lt__(self, other):
+    #     return self.data.keys()[0] < other.data.keys()[0]
 
     def push(self, priority, value):
-        priority = int(priority)
-        heapq.heappush(self.heap, (priority, value))
+        heapq.heappush(self.heap, int(priority))
         if priority not in self.data:       #to avoid the overlapping of the values for which keys are same
             self.data[priority] = []
         self.data[priority].append(value)
@@ -39,7 +41,7 @@ class PriorityQueue(models.Model):
 
     def _heapify(self):     #populate the dictionary with data keys and values
         for priority, values in self.data.items():
-            heapq.heappush(self.heap, (priority, values))
+            heapq.heappush(self.heap, int(priority))
 
     def total_values(self):
         total = 0

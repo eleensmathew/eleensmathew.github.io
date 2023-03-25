@@ -1,11 +1,18 @@
 from django.shortcuts import render
 from .models import PriorityQueue, Admin_info
+from django.db.models import Min
 # Create your views here.
 
 def select_admin(): #Selecting which admin should monitor that video recording
-    admin_select = Admin_info.objects.values_list('priority.total_values()', 'username') #or use lists(...all)
-    min_tuple = min(admin_select, key=lambda tup: tup[0])
-    return min_tuple[1]
+    admin_select = list(Admin_info.objects.all()) 
+    min_val = int(1000)
+    sel = admin_select[0]
+    for ad in admin_select:
+        count = int(ad.priority.total_values())
+        if count < min_val:
+            sel = ad
+            min_val = count
+    return sel.username
     
 def get_video(request):    #Which videos the admins have to currently watch respectively
     admin = request.user.username
@@ -17,12 +24,9 @@ def get_video(request):    #Which videos the admins have to currently watch resp
                                                      "videonext" : videonext
                                                      })
     
-#def assign_priority():  #given based on criteria
-    
-    
-def add_video_details(request, v_id):    #add video in admin's queue
+def add_video_details(p, v_id):    #add video in admin's queue
     admin_assigned = Admin_info.objects.get(username = select_admin()) #object
-    p = assign_priority()
+    print(select_admin())
     pobj = admin_assigned.priority
     if pobj.total_values() == 0:
         pobj = PriorityQueue()

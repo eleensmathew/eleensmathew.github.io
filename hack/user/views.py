@@ -17,6 +17,10 @@ from django.http import (HttpResponse, HttpResponseBadRequest,
 import cv2
 import random
 import os
+import uuid  
+from django.utils.text import slugify
+from .models import Storage
+from webadmin.views import add_video_details
 # from azure.storage.blob import ContentSettings
 #class Uploader(View):
     
@@ -38,16 +42,13 @@ def Upload(request):
 # def upload_video(request):
 #     if request.method == 'POST' and request.FILES['video_file']:
 #         video_file = request.FILES['video_file']
-        
-#         # Save the file to disk (for processing)
 #         with open('tmp/video.mp4', 'wb+') as destination:
 #             for chunk in video_file.chunks():
 #                 destination.write(chunk)
 
 #         # Analyze the video for guns
 #         analysis_result = True#analyze_video_for_guns('tmp/video.mp4')
-        
-#         # If a gun is detected, save the video to Azure Blob Storage
+
 #         if analysis_result['is_gun_detected']:
 #             blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_STORAGE_CONNECTION_STRING)
 #             container_client = blob_service_client.get_container_client('video-container')
@@ -70,34 +71,57 @@ def upload_video(request):
             print(request.FILES)
             logging.error('No video file found in request')
             return HttpResponseBadRequest('No video file found in request')
-        
         if not os.path.exists('tmp'):
             os.makedirs('tmp')
-        with open('tmp/video.mp4', 'wb+') as destination:
+        storage = Storage()
+        storage.name  = video_file.name.split('.')[0]
+        slugn =storage.name + str(uuid.uuid1())
+        slugd = slugify(slugn)
+        vid_path = "tmp/" + slugd + ".mp4"
+        storage.slug = vid_path
+        storage.save()
+        prioritynum = 1
+        add_video_details(prioritynum, vid_path)
+        with open(vid_path, 'wb+') as destination:
             for chunk in video_file.chunks():
                 destination.write(chunk)
-
-      
         #analysis_result = analyze_video_for_guns('tmp/video.mp4')
         analysis_result = {'is_gun_detected': True}
-        
+
         if analysis_result['is_gun_detected']:
             blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_STORAGE_CONNECTION_STRING)
             container_client = blob_service_client.get_container_client('media')
 
             try:
-                with open('tmp/video.mp4', 'rb') as data:
-                    container_client.upload_blob(name='video.mp4', data=data)
+                with open(vid_path, 'rb') as data:
+                    container_client.upload_blob(name=vid_path, data=data)
             except ResourceNotFoundError:
                 logging.error('Could not find container "video-container"')
                 return HttpResponseServerError('Could not find container "video-container"')
 
         return HttpResponse('Video analysis complete')
     return render(request, 'upload.html')
+# def analyze_video_for_guns(video_path):
+#     credential = AzureKeyCredential(settings.AZURE_FORM_RECOGNIZER_API_KEY)
+#     client = FormRecognizerClient(endpoint=settings.AZURE_FORM_RECOGNIZER_ENDPOINT, credential=credential)
+
+#     with open(video_path, "rb") as f:
+#         poller = client.begin_recognize_video_in_stream(
+#             video_stream=f,
+#             detect_options={
+#                 "include": ["weapons"]
+#             },
+#             video_content_type="video/mp4"
+#         )
+#     analysis_result = poller.result()
+#     return {
+#         'is_gun_detected': any([weapon.confidence > 0.5 for weapon in analysis_result.weapons])
+#     }
 
 def delete_image(path):
     os.remove(path)
-def extract_images():
+def extract_images():#(video_file):
+
     cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
 
     images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
@@ -114,3 +138,5 @@ def extract_images():
         cv2.imwrite(image_file, frame)
 
     cap.release()
+
+#extract_images()
