@@ -1,6 +1,6 @@
 Team Name :- Algo-Rhythms
 * [Eleena Sarah Mathew](https://github.com/eleensmathew)
-* [Nandika Agrawal] (https://github.com/Nandika-A)
+* [Nandika Agrawal](https://github.com/Nandika-A)
 * [Vedant Pandey]()
 * [Rudransh Srivastav](https://github.com/orudransh)
 
