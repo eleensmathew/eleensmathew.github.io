@@ -1,0 +1,99 @@
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  background-color: #f5f5f5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+}
+
+/* Container styles */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Form styles */
+form {
+  background-color: red;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-control {
+  margin-bottom: 15px;
+}
+
+.form-control input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.form-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn:hover {
+  background-color: #0069d9;
+}
+
+/* Error message styles */
+.error {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Police styling */
+.police-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.police-header h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.police-header p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}

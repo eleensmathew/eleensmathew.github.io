@@ -97,7 +97,7 @@ def login(request):
             password = form.cleaned_data["password"]
             user = authenticate(email=email, password=password)
             if user:
-                django_login(request)  
+                django_login(request,user)  
                 return redirect('webadmin:stream_video')
             else:
                 error = True

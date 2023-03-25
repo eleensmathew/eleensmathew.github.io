@@ -90,7 +90,7 @@ DATABASES = {
 }
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '/static'),
+    os.path.join(BASE_DIR, 'hack','/static'),
 ]
 
 DEFAULT_FILE_STORAGE = 'hack.custom_azure.AzureMediaStorage'
