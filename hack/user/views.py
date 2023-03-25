@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from azure.core.exceptions import ResourceNotFoundError
 from azure.core.credentials import AzureKeyCredential
+# from django_extensions.management.notebook_extension import shell_plus
 # from azure.ai.formrecognizer import FormRecognizerClient
 # import uuid
 # from azure.storage.blob import BlockBlobService
@@ -84,7 +85,8 @@ def upload_video(request):
         storage.name  = video_file.name.split('.')[0]
         slugn =storage.name + str(uuid.uuid1())
         slugd = slugify(slugn)
-        vid_path = "tmp/" + slugd + ".mp4"
+        # vid_path = "tmp/" + slugd + ".mp4"
+        vid_path = slugd + ".mp4"
         storage.slug = vid_path
         storage.save()
         prioritynum = 1
@@ -110,13 +112,36 @@ def upload_video(request):
 
         return HttpResponse('Video analysis complete')
     return render(request, 'upload.html')
+# def analyze_video_for_guns(video_path):
+#     # Create a FormRecognizerClient instance
+#     credential = AzureKeyCredential(settings.AZURE_FORM_RECOGNIZER_API_KEY)
+#     client = FormRecognizerClient(endpoint=settings.AZURE_FORM_RECOGNIZER_ENDPOINT, credential=credential)
+
+#     # Analyze the video file for gun detection
+#     with open(video_path, "rb") as f:
+#         poller = client.begin_recognize_video_in_stream(
+#             video_stream=f,
+#             detect_options={
+#                 "include": ["weapons"]
+#             },
+#             video_content_type="video/mp4"
+#         )
+#     analysis_result = poller.result()
+
+#     # Return the analysis result
+#     return {
+#         'is_gun_detected': any([weapon.confidence > 0.5 for weapon in analysis_result.weapons])
+#     }
 
 def delete_image(path):
     os.remove(path)
+
 def extract_images():#(video_file):
     cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
+
     images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
     os.makedirs(images_dir, exist_ok=True)
+
     frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 5))
     for i in frame_indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES, i)
@@ -124,6 +149,31 @@ def extract_images():#(video_file):
         if not ret:
             break
 
+        # Save the frame as an image file
         image_file = os.path.join(images_dir, f"frame_{i}.jpg")
         cv2.imwrite(image_file, frame)
+        
+
     cap.release()
+
+    # Call another function with the extracted images
+#extract_images()
+
+# def analyse(request):
+#     image_folder_path = '/media'
+#     image_paths = [os.path.join(image_folder_path, f) for f in os.listdir(image_folder_path) if f.endswith('.jpg') or f.endswith('.png') or f.endswith('.jpeg')]
+#     output = {}#run_notebook('.ipynb', image_paths=image_paths)
+#     return output
+
+# def run_jupyter():
+#     media_folder = settings.MEDIA_ROOT
+    
+#     # get list of image paths
+#     image_paths = [os.path.join(media_folder, f) for f in os.listdir(media_folder) if f.endswith(('.jpg', '.png', '.jpeg'))]
+    
+#     # pass image paths to Jupyter notebook
+#     shell_plus(line=f'run hello.ipynb {image_paths}')
+#     shell_plus(line=f'run hello.ipynb {image_paths}')
+
+#     # return response
+#     return JsonResponse({'message': 'Jupyter notebook completed successfully'})
