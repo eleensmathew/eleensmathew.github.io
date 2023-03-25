@@ -6,6 +6,6 @@ from .views import upload_video
 urlpatterns = [
    
     
-    path('upload/', upload_video,name="upload_video"),
+    path('upload_video/', upload_video,name="upload_video"),
 
 ]
