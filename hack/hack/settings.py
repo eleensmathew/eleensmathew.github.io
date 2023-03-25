@@ -93,6 +93,7 @@ DEFAULT_FILE_STORAGE = 'hack.custom_azure.AzureMediaStorage'
 STATICFILES_STORAGE = 'hack.custom_azure.AzureStaticStorage'
 
 STATIC_LOCATION = "static"
+
 MEDIA_LOCATION = "media"
 
 AZURE_ACCOUNT_NAME = "strageforhack36o"
@@ -100,6 +101,7 @@ AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
 MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
 
+AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=strageforhack36o;AccountKey=0noTnpz6YAgW4UjuJkM7hD7Glo+S+LAeD/0aKFD53nISV1aw6GAnsx2lLZvPveXjcyCdLQ3tOj+R+AStv6/sRw==;BlobEndpoint=https://strageforhack36o.blob.core.windows.net/;FileEndpoint=https://strageforhack36o.file.core.windows.net/;QueueEndpoint=https://strageforhack36o.queue.core.windows.net/;TableEndpoint=https://strageforhack36o.table.core.windows.net/"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -132,6 +134,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+#for images
+# Base url to serve media files
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

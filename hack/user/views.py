@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 # Create your views here.
 from django.contrib import messages
 from django.views import View
@@ -12,7 +11,12 @@ from azure.core.credentials import AzureKeyCredential
 # from azure.storage.blob import BlockBlobService
 from azure.storage.blob import BlobServiceClient
 from django.conf import settings
+from django.http import (HttpResponse, HttpResponseBadRequest, 
+                         HttpResponseForbidden, HttpResponseServerError)
 
+import cv2
+import random
+import os
 # from azure.storage.blob import ContentSettings
 #class Uploader(View):
     
@@ -31,25 +35,82 @@ from django.conf import settings
 def Upload(request):
     return render(request, 'upload.html')
          #return render(request,"upload.html")
+# def upload_video(request):
+#     if request.method == 'POST' and request.FILES['video_file']:
+#         video_file = request.FILES['video_file']
+        
+#         # Save the file to disk (for processing)
+#         with open('tmp/video.mp4', 'wb+') as destination:
+#             for chunk in video_file.chunks():
+#                 destination.write(chunk)
+
+#         # Analyze the video for guns
+#         analysis_result = True#analyze_video_for_guns('tmp/video.mp4')
+        
+#         # If a gun is detected, save the video to Azure Blob Storage
+#         if analysis_result['is_gun_detected']:
+#             blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_STORAGE_CONNECTION_STRING)
+#             container_client = blob_service_client.get_container_client('video-container')
+
+#             try:
+#                 with open('tmp/video.mp4', 'rb') as data:
+#                     container_client.upload_blob(name='video.mp4', data=data)
+#             except ResourceNotFoundError:
+#                 return HttpResponse('Could not find container "video-container"')
+
+#         return HttpResponse('Video analysis complete')
+import logging
+
 def upload_video(request):
-    if request.method == 'POST' and request.FILES['video_file']:
-        video_file = request.FILES['video_file']
+    if request.method == 'POST':
+        
+        try:
+            video_file = request.FILES['video_file']
+        except KeyError:
+            print(request.FILES)
+            logging.error('No video file found in request')
+            return HttpResponseBadRequest('No video file found in request')
+        
+        if not os.path.exists('tmp'):
+            os.makedirs('tmp')
         with open('tmp/video.mp4', 'wb+') as destination:
             for chunk in video_file.chunks():
                 destination.write(chunk)
-        analysis_result = analyze_video_for_guns('tmp/video.mp4')
+
+      
+        #analysis_result = analyze_video_for_guns('tmp/video.mp4')
+        analysis_result = {'is_gun_detected': True}
+        
         if analysis_result['is_gun_detected']:
             blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_STORAGE_CONNECTION_STRING)
-            container_client = blob_service_client.get_container_client('video-container')
+            container_client = blob_service_client.get_container_client('media')
 
             try:
                 with open('tmp/video.mp4', 'rb') as data:
                     container_client.upload_blob(name='video.mp4', data=data)
             except ResourceNotFoundError:
-                return HttpResponse('Could not find container "video-container"')
+                logging.error('Could not find container "video-container"')
+                return HttpResponseServerError('Could not find container "video-container"')
 
         return HttpResponse('Video analysis complete')
-
     return render(request, 'upload.html')
-def analyze_video_for_guns(video_path):
-    pass
+
+def delete_image(path):
+    os.remove(path)
+def extract_images():
+    cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
+
+    images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
+    os.makedirs(images_dir, exist_ok=True)
+
+    frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 5))
+    for i in frame_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, i)
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        image_file = os.path.join(images_dir, f"frame_{i}.jpg")
+        cv2.imwrite(image_file, frame)
+
+    cap.release()

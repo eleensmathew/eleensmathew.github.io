@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Video</title>
+    <script>
+        // Set the maximum video duration to 1 minute (in milliseconds)
+        const MAX_VIDEO_DURATION = 60 * 1000;
+
+        // Initialize variables
+        // Initialize variables
+let mediaRecorder, videoChunks, video, startTime, pausedTime;
+let formData = new FormData();
+let blob;
+
+// When the page loads, start the video recording
+window.onload = function() {
+    video = document.querySelector('video');
+    video.currentTime = 0; // Set the time to 0
+    startRecording();
+}
+
+// Start recording video using the device camera
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({video: true, audio: true})
+        .then(function(stream) {
+            mediaRecorder = new MediaRecorder(stream);
+            videoChunks = [];
+            video.srcObject = stream;
+            video.play();
+            mediaRecorder.start();
+            mediaRecorder.ondataavailable = function(e) {
+                videoChunks.push(e.data);
+            }
+            mediaRecorder.onstop = function() {
+                blob = new Blob(videoChunks, { 'type' : 'video/mp4' });
+                let url = URL.createObjectURL(blob);
+                video.src = url;
+                formData.append('video_file', blob, 'video.mp4');
+            }
+            let paused = false;
+            let pauseTime = 0;
+            video.addEventListener('pause', function() {
+                paused = true;
+                pauseTime = video.currentTime;
+                mediaRecorder.pause();
+            });
+            video.addEventListener('play', function() {
+                if (paused) {
+                    startTime = pauseTime;//Date.now() - (pauseTime * 1000);
+                    paused = false;
+                    mediaRecorder.resume();
+                } else {
+                    startTime = Date.now();
+                }
+            });
+            setInterval(function() {
+                let elapsedTime = Date.now() - startTime;
+                let currentTime = paused ? pauseTime : elapsedTime / 1000;
+                video.currentTime = currentTime;
+            }, 100);
+            setTimeout(function() {
+                stopRecording();
+            }, MAX_VIDEO_DURATION);
+        })
+        .catch(function(err) {
+            console.log('Error: ' + err.message);
+        });
+}
+
+// Stop recording video and upload the recorded video
+function stopRecording() {
+    mediaRecorder.stop();
+    video.pause();
+    video.currentTime = 0;
+    sendVideo(formData);
+}
+
+// Send the recorded video to the server
+function sendVideo(formData) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload_video/');
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    xhr.setRequestHeader('X-CSRFToken', csrftoken);
+    xhr.send(formData);
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            window.location.reload();
+        }
+    }
+}
+
+    </script>
+</head>
+<body>
+    <h1>Record Video</h1>
+    <p>Record a video up to one minute in length:</p>
+    <video controls></video>
+    <br>
+    <button onclick="stopRecording();">Stop Recording and Upload</button>
+    {% csrf_token %}
+</body>
+</html>
