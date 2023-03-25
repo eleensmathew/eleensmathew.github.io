@@ -69,6 +69,9 @@ def Upload(request):
 import logging
 
 def upload_video(request):
+    tup = get_location(request)
+    tup0 = str(tup[0])
+    tup1 = str(tup[1])
     if request.method == 'POST':
         
         try:
@@ -93,6 +96,7 @@ def upload_video(request):
         s = slugd + ".mp4"
         vid_path = string+ s
         storage.slug = vid_path
+        storage.location = tup0 + " " + tup1
         storage.save()
         prioritynum = 1
         add_video_details(prioritynum, s)
@@ -202,4 +206,9 @@ def extract_images():#video_file_name):
 
 #     # return response
 #     return JsonResponse({'message': 'Jupyter notebook completed successfully'})
-extract_images()
+
+def get_location(request):
+    if request.method == 'POST':
+        if 'location' in request.POST:
+            lat, lng = request.POST['location'].split(',')
+            return (lat, lng)
