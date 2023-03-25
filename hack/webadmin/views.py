@@ -1,28 +1,75 @@
-from django.shortcuts import render
-from .models import PriorityQueue, Admin_info
-# Create your views here.
+from django.shortcuts import render, redirect
+from .models import PriorityQueue, Admin_info, CustomUser
+from .forms import LogInForm
+from django.contrib.auth.decorators import login_required
+from django.db.models import Min
+from django.contrib.auth import login as django_login, authenticate, logout as django_logout
+from django.urls import reverse
+from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobClient, BlobBlock
+from django.http import HttpResponse
+from django.conf import settings
 
-def select_admin(): #Selecting which admin should monitor that video recording
-    admin_select = Admin_info.objects.values_list('priority.total_values()', 'username') #or use lists(...all)
-    min_tuple = min(admin_select, key=lambda tup: tup[0])
-    return min_tuple[1]
+
+def stream_video(request):
+    # Get the connection string and container name from settings
+    connection_string = settings.AZURE_STORAGE_CONNECTION_STRING
+    container_name = 'media'
+
+    # Create a BlobServiceClient object using the connection string
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     
-def get_video(request):    #Which videos the admins have to currently watch respectively
-    admin = request.user.username
-    admin_obj = Admin_info.objects.get(username = admin)
-    #if admin_obj.total_values() == 0:
-    video = admin_obj.priority.pop()
-    videonext = admin_obj.priority.peek()
+    # Create a BlobClient object for the video file
+    li = get_video(request)
+    video = li[0]
+    videonext = li[1]
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=video)
+
+    # Set the response headers for video streaming
+    # content_type = blob_client.get_blob_properties().content_settings.content_type
+    response = HttpResponse(blob_client.download_blob().content_settings.content_type or 'video/mp4')
+
+    response['Content-Disposition'] = 'inline'
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+
+    # Stream the video content
+    response.streaming_content = blob_client.download_blob().content_as_bytes()
+
+    # Render the template
     return render(request, "webadmin/Showrec.html", {"video" : video,
                                                      "videonext" : videonext
                                                      })
+
+def select_admin(): #Selecting which admin should monitor that video recording
+    admin_select = list(Admin_info.objects.all()) 
+    min_val = int(1000)
+    sel = admin_select[0]
+    for ad in admin_select:
+        count = int(ad.priority.total_values())
+        if count < min_val:
+            sel = ad
+            min_val = count
+    return sel.user.id
+
+@login_required    
+def get_video(request):    #Which videos the admins have to currently watch respectively
+    adm = request.user.id
+    admin_obj = Admin_info.objects.get(user_id = adm)
+    if admin_obj.priority.total_values() == 0:
+        video = "."
+    else:
+        video = admin_obj.priority.peek()
+    if admin_obj.priority.total_values() == 0:
+        videonext = "."
+    else:
+        videonext = admin_obj.priority.peek()
+    return [video,videonext]
     
-def assign_priority():  #given based on criteria
-    
-    
-def add_video_details(request, v_id):    #add video in admin's queue
-    admin_assigned = Admin_info.objects.get(username = select_admin()) #object
-    p = assign_priority()
+def add_video_details(p, v_id):    #add video in admin's queue
+    ad = select_admin()
+    admin_assigned = Admin_info.objects.get(user_id = ad) #object
+    # print(select_admin())
     pobj = admin_assigned.priority
     if pobj.total_values() == 0:
         pobj = PriorityQueue()
@@ -31,3 +78,29 @@ def add_video_details(request, v_id):    #add video in admin's queue
     else:
         pobj.push(p, v_id)
     admin_assigned.save()
+
+def login(request):
+    error = False
+    if request.user.is_authenticated:
+        return redirect('webadmin:stream_video')
+    if request.method == "POST":
+        form = LogInForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            password = form.cleaned_data["password"]
+            user = authenticate(email=email, password=password)
+            if user:
+                django_login(request)  
+                return redirect('webadmin:stream_video')
+            else:
+                error = True
+    else:
+        form = LogInForm()
+
+    return render(request, 'webadmin/login.html', {'form': form, 'error': error})
+
+
+def logout(request):
+    django_logout(request)
+    return redirect(reverse('webadmin:login'))
+  

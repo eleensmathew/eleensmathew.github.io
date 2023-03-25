@@ -1,4 +1,3 @@
-
 from storages.backends.azure_storage import AzureStorage
 
 class AzureMediaStorage(AzureStorage):
@@ -12,3 +11,4 @@ class AzureStaticStorage(AzureStorage):
     account_key = '+R/PFHg41m/ixbHSITMpqkA2ieDGMr9bIJQEgNwusaSs8RU79J2R5qqm6MvZpK5sFl5wn/JnbJiz+AStx0atjA==' # <storage_account_key>
     azure_container = 'static'
     expiration_secs = None
+    
