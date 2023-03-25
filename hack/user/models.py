@@ -7,6 +7,20 @@ import os
 def get_upload_to(instance, filename):
     return os.path.join('videos', str(instance.pk), filename)
 
+# class Scores(models.Model):
+#     foldername = models.CharField(max_length=200)
+#     gun =  models.IntegerField(default=0, null=True, blank=True)
+#     fire =  models.IntegerField(default=0, null=True, blank=True)
+#     fight = models.IntegerField(default=0, null=True, blank=True)
+#     knife = models.IntegerField(default=0, null=True, blank=True)
+#     facial_recog =  models.IntegerField(default=0, null=True, blank=True)
+#     audio_scream =  models.IntegerField(default=0, null=True, blank=True)
+#     audio_gun = models.IntegerField(default=0, null=True, blank=True)
+#     speech_to_text = models.IntegerField(default=0, null=True, blank=True)
+    
+#     def __str__(self):
+#         return str(self.foldername)
+
 class Storage(models.Model):
     video_file=models.FileField(upload_to='videos_uploaded',null=True,validators=[FileExtensionValidator(allowed_extensions=['MOV','avi','mp4','webm','mkv'])])
     date_uploaded = models.DateTimeField(default=timezone.now)

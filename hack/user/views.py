@@ -16,13 +16,13 @@ from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseServerError)
 from django.http import JsonResponse
 #from django_extensions.management.notebook_extension import run_notebook
-from .kernel import *
+#from .kernel import *
 import cv2
 import random
 import os
 import uuid  
 from django.utils.text import slugify
-from .models import Storage
+from .models import Storage#, Scores
 from webadmin.views import add_video_details
 # from azure.storage.blob import ContentSettings
 #class Uploader(View):
@@ -81,6 +81,9 @@ def upload_video(request):
         # Save the file to disk (for processing)
         if not os.path.exists('tmp'):
             os.makedirs('tmp')
+            
+        # extract_images(video_file)
+        
         storage = Storage()
         storage.name  = video_file.name.split('.')[0]
         slugn =storage.name + str(uuid.uuid1())
@@ -133,31 +136,48 @@ def upload_video(request):
 #         'is_gun_detected': any([weapon.confidence > 0.5 for weapon in analysis_result.weapons])
 #     }
 
-def delete_image(path):
-    os.remove(path)
-def extract_images():#(video_file):
+# def delete_image(path):
+#     os.remove(path)
+def extract_images():#video_file_name):
     # Open the video file
-    cap = cv2.VideoCapture('/home/eleensmathew/hack36-project/video.mp4')#(video_file)
+    video_file_name = '/mnt/c/Users/amita/OneDrive/Desktop/django_proj/eleensmathew.github.io/hack/tmp/video.mp4'
+    cap = cv2.VideoCapture(video_file_name)#(video_file)
 
+    # name  = video_file_name.split('.')[0]
+    # slugn = name + str(uuid.uuid1())
+    # slugd = slugify(slugn)
+    # vid_folder_name = slugd
+    
     # Create a directory to save the extracted images
-    images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images')
+    images_dir = os.path.join(settings.MEDIA_ROOT, 'extracted_images2')#vid_folder_name)
     os.makedirs(images_dir, exist_ok=True)
 
     # Extract 5 random images from the video file
-    frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 5))
-    for i in frame_indices:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, i)
-        ret, frame = cap.read()
+    #frame_indices = sorted(random.sample(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))), 2))
+    framecount=0
+    f = open('img_paths.txt', 'w+')
+    while cap.isOpened() and framecount<5:
+        ret, frame=cap.read()
         if not ret:
             break
+    # for i in frame_indices:
+    #     cap.set(cv2.CAP_PROP_POS_FRAMES, i)
+    #     ret, frame = cap.read()
+    #     if not ret:
+    #         break
 
         # Save the frame as an image file
-        image_file = os.path.join(images_dir, f"frame_{i}.jpg")
+        image_file = os.path.join(images_dir, f"frame_{framecount}.jpg")
+        framecount+=1
         cv2.imwrite(image_file, frame)
-        
+        f.write(image_file + "\n")
 
     # Release the video file
     cap.release()
+    f.close()
+    # f = open('img_paths.txt', 'w+')
+    # f.write()
+    # f.close()
 
     # Call another function with the extracted images
 #extract_images()
@@ -180,3 +200,4 @@ def extract_images():#(video_file):
 
 #     # return response
 #     return JsonResponse({'message': 'Jupyter notebook completed successfully'})
+extract_images()
