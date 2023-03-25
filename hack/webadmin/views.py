@@ -17,7 +17,7 @@ def get_video(request):    #Which videos the admins have to currently watch resp
                                                      "videonext" : videonext
                                                      })
     
-def assign_priority():  #given based on criteria
+#def assign_priority():  #given based on criteria
     
     
 def add_video_details(request, v_id):    #add video in admin's queue
