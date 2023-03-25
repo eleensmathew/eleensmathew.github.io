@@ -15,7 +15,7 @@ from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseServerError)
 from django.http import JsonResponse
 #from django_extensions.management.notebook_extension import run_notebook
-from .kernel import *
+# from .kernel import *
 import cv2
 import random
 import os
