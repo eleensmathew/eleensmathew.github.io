@@ -10,18 +10,14 @@ def select_admin(): #Selecting which admin should monitor that video recording
 def get_video(request):    #Which videos the admins have to currently watch respectively
     admin = request.user.username
     admin_obj = Admin_info.objects.get(username = admin)
-    video = admin_obj.priority.peek()
-    return render(request, "webadmin/Showrec.html", {"video" : video})
+    video = admin_obj.priority.pop()
+    videonext = admin_obj.priority.peek()
+    return render(request, "webadmin/Showrec.html", {"video" : video,
+                                                     "videonext" : videonext
+                                                     })
     
 def assign_priority():  #given based on criteria
     
-def next_video():
-    #video the admin has to watch after they finished watching the previous and delete previous from queue
-    admin = request.user.username
-    adminobj = Admin_info.objects.get(username = admin)
-    vid1 = admin_obj.priority.pop()
-    video = admin_obj.priority.peek()
-    return render(request, "webadmin/Showrec.html", {"video" : video})
     
 def add_video_details(request, v_id):    #add video in admin's queue
     admin_assigned = Admin_info.objects.get(username = select_admin()) #object
